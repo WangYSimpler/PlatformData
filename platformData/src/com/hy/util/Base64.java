@@ -8,7 +8,7 @@ import java.io.OutputStream;
  * base64加密解密
  */
 public class Base64 {
-	private static final long serialVersionUID = 1L;
+	
     private static final char[] legalChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
 
     /**

@@ -166,34 +166,42 @@ public class LogController {
 					if ( conditions.contains("BJLX")) {
 						conditions += " and ";
 					}
+					///20170207 王勇
+					String currentDate = simpleDateFormat.format(new Date());
+					
 					if (dateStart == null || dateStart == "") {
-						String currentDate = simpleDateFormat.format(new Date());
+						//String currentDate = simpleDateFormat.format(new Date());
+						dataObjectCode = "DWD_DPT_JCJ_JJXX_ONEDAY";
 						String currentDateStart = currentDate + "000000";
 						String currentDateEnd = currentDate + "235959";
-
-						// System.out.println(currentDate);
-
-						// currentDate = "BJR='汲萌萌'";
-						conditions += "JJRQSJ>= to_date('" + currentDateStart
+						
+						conditions += "JJRQSJ like '" + currentDate + "%'";
+						
+						/*conditions += "JJRQSJ>= to_date('" + currentDateStart
 								+ "' ,'yyyymmddhh24miss') AND JJRQSJ<= to_date('" + currentDateEnd
-								+ "' ,'yyyymmddhh24miss')";
+								+ "' ,'yyyymmddhh24miss')";*/
 					} else {
 
 						Date d = DateUtils.getUtilDateByString(dateStart, "yyyy-MM-dd");
 						String dateStartFormt = DateUtils.getDateTime(d, "yyyyMMdd");
-
-						String specialDateStart = dateStartFormt + "000000";
-						String specialDateEnd = dateStartFormt + "235959";
-						// System.out.println(currentDate);
-
-						conditions += "JJRQSJ>= to_date('" + specialDateStart
-								+ "' ,'yyyymmddhh24miss') AND JJRQSJ<= to_date('" + specialDateEnd
-								+ "' ,'yyyymmddhh24miss')";
+						if (dateStartFormt.equals(currentDate)) {
+							dataObjectCode = "DWD_DPT_JCJ_JJXX_ONEDAY";
+							conditions += "JJRQSJ like '" + currentDate + "%'";
+						}else {
+							String specialDateStart = dateStartFormt + "000000";
+							String specialDateEnd = dateStartFormt + "235959";
+							// System.out.println(currentDate);
+							dataObjectCode = "DWD_DPTJCJ_JJXX";
+							conditions += "JJRQSJ>= to_date('" + specialDateStart
+									+ "' ,'yyyymmddhh24miss') AND JJRQSJ<= to_date('" + specialDateEnd
+									+ "' ,'yyyymmddhh24miss')";
+						}
+						
+						
 
 					}
 				}
-				
-					queryMethodResult = gpd.query("DWD_DPTJCJ_JJXX", conditions, returnFields, 500);				
+				 queryMethodResult = gpd.query(dataObjectCode, conditions, returnFields, 500);
 
 			} else {
 				queryMethodResult = "-1";
