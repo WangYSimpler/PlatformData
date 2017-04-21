@@ -1,8 +1,11 @@
 package com.hy.manager.sys.module;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -16,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.dubbo.remoting.TimeoutException;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.hy.util.DateUtils;
+import com.hy.util.JsonUtil;
 
 /**
  * 登录 controller
@@ -29,6 +34,7 @@ import com.hy.util.DateUtils;
 @RequestMapping("/data")
 public class LogController {
 	
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(LogController.class);
 
@@ -196,14 +202,68 @@ public class LogController {
 									+ "' ,'yyyymmddhh24miss') AND JJRQSJ<= to_date('" + specialDateEnd
 									+ "' ,'yyyymmddhh24miss')";
 						}
-						
-						
-
 					}
+					
 				}
 				 queryMethodResult = gpd.query(dataObjectCode, conditions, returnFields, 500);
 
-			} else {
+			}///20170420  王勇合肥用于系统同步数据
+			else if (methodName.equals("querySyncJJXX")) {
+				/// 传递时间到后台
+				String dateStart = request.getParameter("DStart");
+				///传递结束
+				String dateEnd = request.getParameter("DEnd");
+				///
+				String JJBHString = request.getParameter("JJBH");
+				
+				String oneDayConditions = "";
+				
+				Map<String, String> dataObjectCodeConditionMap = new HashMap<String, String>();
+				
+				// 时间的格式化
+				//SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+				
+				if (!conditions.equals("")) {
+					conditions += "  and ";
+				}
+				if (JJBHString != null && JJBHString != "") {
+					
+					conditions += "JJBH='" + JJBHString + "'";
+				} else {
+					/// 传条件值条件值
+					if (conditions.contains("JJBH")) {
+						conditions += "  and ";
+					}
+					///20170420   王勇
+					///查询接警信息
+					if (dataObjectCode.equals("DWD_DPTJCJ_JJXX") || dataObjectCode.equals("DWD_DPT_AJ_JBXX") || dataObjectCode.equals("DWD_DPTJCJ_CJXX")) {
+						dataObjectCodeConditionMap.clear();
+						dataObjectCodeConditionMap.putAll(new SyncJJXXDate().getDataObjectCodeConditioMap(dataObjectCode,dateStart, dateEnd));
+					}
+					
+				}
+				
+				String conditionTempStr = conditions;
+				//保存两个结果
+				List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
+				listMap.clear();
+				
+				///获取objectCode
+				for (Map.Entry<String, String> entry : dataObjectCodeConditionMap.entrySet()) {
+
+					dataObjectCode = entry.getKey();
+					conditions = conditionTempStr + entry.getValue();
+					List<Map<String, String>> listMapTemp = new ArrayList<Map<String, String>>();
+					String queryResult = gpd.query(dataObjectCode, conditions, returnFields, pageSize);
+					listMapTemp = JsonUtil.parseMap2JavaBean(queryResult, new TypeToken<List<Map<String, String>>>() {}.getType());
+					if (listMapTemp.size() > 0) {
+						listMap.addAll(listMapTemp);
+					}
+					
+				}
+				queryMethodResult = new Gson().toJson(listMap);
+
+			}else {
 				queryMethodResult = "-1";
 			}
 		}

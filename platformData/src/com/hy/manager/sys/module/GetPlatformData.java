@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.dubbo.common.json.JSONObject;
 import com.google.gson.Gson;
 
 import cn.com.dimensoft.esb.query.QueryFwzxService;
@@ -106,7 +107,7 @@ public class GetPlatformData {
 		}*/
 		
 		String queryResult = "";
-		queryResult = (new Gson()).toJson(list);
+		queryResult = new Gson().toJson(list);
 		
 		/*
 		 //测试使用

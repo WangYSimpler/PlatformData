@@ -38,6 +38,20 @@ public class DateUtils
 		return nowTime;
 	}
 	/**
+	 * 
+	 * @param dateformat
+	 * @return
+	 */
+	public static String getPreNowTime(String dateformat)
+	{
+		Calendar cal=Calendar.getInstance();
+		cal.add(Calendar.DATE,-1);
+		Date time=cal.getTime();
+		SimpleDateFormat dateFormat = new SimpleDateFormat(dateformat);
+		String preNowTime = dateFormat.format(time);
+		return preNowTime;
+	}
+	/**
      * 得到当前时间
      * @param dateformat 设置格式化日期
      * @return util.Date
