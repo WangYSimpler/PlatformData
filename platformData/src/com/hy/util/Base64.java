@@ -134,10 +134,12 @@ public class Base64 {
     {
     	String des_key = "sd#shop-";
     	String str = "512";
+    	System.out.println("Str:" + str);
+    	
     	String des_en_str = DES.encode(str, des_key);
+    	System.out.println("des_en_str:" + des_en_str);
     	String base_des_str = Base64.encode(des_en_str.getBytes());
-    	System.out.println(str);
-    	System.out.println(des_en_str);
+    	
     	System.out.println(base_des_str);
     	String de_b_str = new String(Base64.decode(base_des_str));
     	System.out.println(de_b_str);
