@@ -102,16 +102,7 @@ public class ConsumerTest {
 		System.out.println("========**end***===========");
 
 		
-		/*
-		 * List<Map> 展示
-		 * for(Map<String,String> map : list) { //System.out.println(map);
-		 * 
-		 * // JSONArray queryResult =
-		 * 
-		 * System.out.println("========**开始***===========");
-		 * System.out.println("结果是：" + map);
-		 * System.out.println("========**end***==========="); }
-		 */
+		
 
 		consumerContext.close();
 

@@ -16,7 +16,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
@@ -38,30 +37,11 @@ public class LogController {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(LogController.class);
 
-	/**
-	 * 跳转登录页
-	 */
-	@RequestMapping(value = "toLogin")
-	public String toLogin(HttpServletRequest request) {
-
-		return "login";
-	}
-
-	/**
-	 * 登录
-	 */
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public String login(String no, String pwd, HttpServletRequest request, HttpSession session) {
-		logger.info("登录成功");
-
-		return "manager/sys/main";
-	}
-
 	@Resource
 	GetPlatformData gpd;
 
 	/**
-	 * 退出
+	 * 查询大平台数据
 	 */
 	@RequestMapping(value = "/getDatas", produces = "application/json;charset=utf-8")
 	@ResponseBody
@@ -71,21 +51,28 @@ public class LogController {
 		String methodName = request.getParameter("methodName");
 		String dataObjectCode = request.getParameter("dataObjectCode");
 		String conditions = request.getParameter("conditions");
+		
+		/***************打印传递值************************/
+		logger.info("methodName :"      + methodName + " ; ");
+		logger.info("dataObjectCode : " + dataObjectCode + " ; ");
+		logger.info("conditions : "     +conditions + " ; ");
+		/**************************************/
 
 		if (null == methodName || methodName.equals("") || null == dataObjectCode || dataObjectCode.equals("")) {
-			/// 没有传递函数名
+			/*** 没有传递函数名 ***/
 			queryMethodResult = "-1";
 		} else {
-			/// 查询条件
-			// String conditions = request.getParameter("conditions");
+			
 			/// 返回结果字段
 			String returnFields = request.getParameter("returnFields");
 			if (conditions == null) {
 				conditions = "";
 			}
+			
 			if (returnFields == null) {
 				returnFields = "";
 			}
+			
 			/// 每页条目数量没传值默认给20条
 			// int pageSize = 20;
 			String pageSizeString = request.getParameter("pageSize");
@@ -178,8 +165,8 @@ public class LogController {
 					if (dateStart == null || dateStart == "") {
 						//String currentDate = simpleDateFormat.format(new Date());
 						dataObjectCode = "DWD_DPT_JCJ_JJXX_ONEDAY";
-						String currentDateStart = currentDate + "000000";
-						String currentDateEnd = currentDate + "235959";
+						/*String currentDateStart = currentDate + "000000";
+						String currentDateEnd = currentDate + "235959";*/
 						
 						conditions += "JJRQSJ like '" + currentDate + "%'";
 						
@@ -216,7 +203,7 @@ public class LogController {
 				///
 				String JJBHString = request.getParameter("JJBH");
 				
-				String oneDayConditions = "";
+				//String oneDayConditions = "";
 				
 				Map<String, String> dataObjectCodeConditionMap = new HashMap<String, String>();
 				

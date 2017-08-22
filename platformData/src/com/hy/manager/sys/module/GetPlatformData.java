@@ -8,38 +8,37 @@ package com.hy.manager.sys.module;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
-
-import com.alibaba.dubbo.common.json.JSONObject;
 import com.google.gson.Gson;
+import com.hy.util.PropertiesUtils;
 
 import cn.com.dimensoft.esb.query.QueryFwzxService;
-import cn.com.dimensoft.esb.query.QueryService;
 
 @Service
 public class GetPlatformData {
 
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
 	private final static String userInfo = "{'account':'040708','password':'szzhzx'}";
 	private static ClassPathXmlApplicationContext consumerContext = null;
 	private static QueryFwzxService queryService = null;
 	
+	private Properties properties = null;
+	
 	///系統初始化函数，配置文件读取，获取bean等
 	public void platformDataInit() {
 		consumerContext = new ClassPathXmlApplicationContext(this.getClass().getResource("/") + "consumer.xml");
 		queryService = (QueryFwzxService) consumerContext.getBean("query");
+		properties = new PropertiesUtils().getProperties();
 	}
 
 	//关闭系统
@@ -55,7 +54,9 @@ public class GetPlatformData {
 		///
 		/// 初始化
 		this.platformDataInit();
-
+		
+		String newUserInfo = "{'account':'040708','password':'szzhzx','" +dataObjectCodesStr+"':'"+properties.getProperty(dataObjectCodesStr)+"'}";
+		
 		
 		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 		if (conditions.matches("(.*)JJBH(.*)")) {
@@ -69,13 +70,13 @@ public class GetPlatformData {
 				dataObjectCodesStr = "DWD_DPT_AJ_JBXX_ONEDAY";
 			}
 			
-			list = queryService.query(dataObjectCodesStr, conditions, returnFields, pageSize,userInfo);
+			list = queryService.query(dataObjectCodesStr, conditions, returnFields, pageSize,newUserInfo);
 			if (null == list || 0 == list.size() ) {
 				dataObjectCodesStr = dataObjectCode;
-				list = queryService.query(dataObjectCodesStr, conditions, returnFields, pageSize,userInfo);
+				list = queryService.query(dataObjectCodesStr, conditions, returnFields, pageSize,newUserInfo);
 			}
 		}else{
-			list = queryService.query(dataObjectCodesStr, conditions, returnFields, pageSize,userInfo);
+			list = queryService.query(dataObjectCodesStr, conditions, returnFields, pageSize,newUserInfo);
 		}
 		
 		/***
@@ -133,8 +134,7 @@ public class GetPlatformData {
 		this.platformDataInit();
 		String queryResult = "";
 
-		queryResult = queryService.query(dataObjectCode, conditions, returnFields, pageSize, formatted, resultStyle,
-				userInfo);
+		queryResult = queryService.query(dataObjectCodesStr, conditions, returnFields, pageSize, formatted, resultStyle,userInfo);
 		/* //测试使用
 		System.out.println("========开始***===========");
 		System.out.println("结果是：" + queryResult);
