@@ -14,13 +14,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.hy.util.PropertiesUtils;
-
 import cn.com.dimensoft.esb.query.QueryFwzxService;
 
 @Service
@@ -32,8 +30,9 @@ public class GetPlatformData {
 	private static ClassPathXmlApplicationContext consumerContext = null;
 	private static QueryFwzxService queryService = null;
 	
+	// 20170822 wangyong 增加用户新增资源代码查询
 	private Properties properties = null;
-	
+
 	///系統初始化函数，配置文件读取，获取bean等
 	public void platformDataInit() {
 		consumerContext = new ClassPathXmlApplicationContext(this.getClass().getResource("/") + "consumer.xml");
@@ -54,10 +53,8 @@ public class GetPlatformData {
 		///
 		/// 初始化
 		this.platformDataInit();
-		
-		String newUserInfo = "{'account':'040708','password':'szzhzx','" +dataObjectCodesStr+"':'"+properties.getProperty(dataObjectCodesStr)+"'}";
-		
-		
+		String newUserInfo ="";
+				
 		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 		if (conditions.matches("(.*)JJBH(.*)")) {
 			if (dataObjectCodesStr.equals("DWD_DPTJCJ_JJXX")) {
@@ -69,13 +66,15 @@ public class GetPlatformData {
 			if (dataObjectCodesStr.equals("DWD_DPT_AJ_JBXX")) {
 				dataObjectCodesStr = "DWD_DPT_AJ_JBXX_ONEDAY";
 			}
-			
+			newUserInfo  = "{'REQ_ID':'"+properties.getProperty(dataObjectCodesStr)+"','account':'040708','password':'szzhzx'}";
 			list = queryService.query(dataObjectCodesStr, conditions, returnFields, pageSize,newUserInfo);
 			if (null == list || 0 == list.size() ) {
 				dataObjectCodesStr = dataObjectCode;
+				newUserInfo  = "{'REQ_ID':'"+properties.getProperty(dataObjectCodesStr)+"','account':'040708','password':'szzhzx'}";
 				list = queryService.query(dataObjectCodesStr, conditions, returnFields, pageSize,newUserInfo);
 			}
 		}else{
+			newUserInfo  = "{'REQ_ID':'"+properties.getProperty(dataObjectCodesStr)+"','account':'040708','password':'szzhzx'}";
 			list = queryService.query(dataObjectCodesStr, conditions, returnFields, pageSize,newUserInfo);
 		}
 		
@@ -127,14 +126,15 @@ public class GetPlatformData {
 		return queryResult;
 	}
 
-	public String query(String dataObjectCode, String conditions, String returnFields, int pageSize, Boolean formatted,
-			String resultStyle) {
+	public String query(String dataObjectCode, String conditions, String returnFields, int pageSize, Boolean formatted,	String resultStyle) {
+		
 		String dataObjectCodesStr = dataObjectCode;
 		/// 初始化
 		this.platformDataInit();
+		String newUserInfo = "";
 		String queryResult = "";
-
-		queryResult = queryService.query(dataObjectCodesStr, conditions, returnFields, pageSize, formatted, resultStyle,userInfo);
+		newUserInfo  = "{'REQ_ID':'"+properties.getProperty(dataObjectCodesStr)+"','account':'040708','password':'szzhzx'}";
+		queryResult = queryService.query(dataObjectCodesStr, conditions, returnFields, pageSize, formatted, resultStyle,newUserInfo);
 		/* //测试使用
 		System.out.println("========开始***===========");
 		System.out.println("结果是：" + queryResult);
@@ -178,17 +178,19 @@ public class GetPlatformData {
 
 		String queryResult = "";
 		String dataObjectCodesStr = dataObjectCode;
+		String newUserInfo = "";
 		if (!dataObjectCode.equals("DWD_DPTJCJ_JJXX")) {
 
 			return queryResult;
 		}
 
 		this.platformDataInit();
-
-		int queryCounts = queryService.count(dataObjectCode, conditions, userInfo);
+		///增加REQ_ID 王勇 201700820
+		newUserInfo  = "{'REQ_ID':'"+properties.getProperty(dataObjectCodesStr)+"','account':'040708','password':'szzhzx'}";
+		int queryCounts = queryService.count(dataObjectCodesStr, conditions, newUserInfo);
 		// System.out.println(queryCounts);
 
-		List<Map<String, String>> list = queryService.query(dataObjectCode, conditions, returnFields, queryCounts,	userInfo);
+		List<Map<String, String>> list = queryService.query(dataObjectCode, conditions, returnFields, queryCounts,	newUserInfo);
 		
 		
        /*List<Map<String, String>> listOneDay = new ArrayList<Map<String,String>>();
@@ -258,8 +260,11 @@ public class GetPlatformData {
 	/// 总条数
 	public String count(String dataObjectCode, String conditions) {
 		String dataObjectCodesStr = dataObjectCode;
+		String newUserInfo ="";
 		this.platformDataInit();
-		int counts = queryService.count(dataObjectCode, conditions, userInfo);
+		///增加REQ_ID 王勇 201700820
+		newUserInfo  = "{'REQ_ID':'"+properties.getProperty(dataObjectCodesStr)+"','account':'040708','password':'szzhzx'}";
+		int counts = queryService.count(dataObjectCode, conditions, newUserInfo);
 		
 		 /*int listOneDay = 0;
 			
@@ -303,13 +308,15 @@ public class GetPlatformData {
 		return queryResult;
 	}
 
-	public String pageQuery(String dataObjectCode, String conditions, String returnFields, int pageSize,
-			int pageNumber) {
+	public String pageQuery(String dataObjectCode, String conditions, String returnFields, int pageSize,int pageNumber) {
+		
 		String dataObjectCodesStr = dataObjectCode;
 
+		String newUserInfo ="";
 		this.platformDataInit();
-		List<Map<String, String>> list = queryService.pageQuery(dataObjectCode, conditions, returnFields, pageSize,
-				pageNumber, userInfo);
+		///增加REQ_ID 王勇 201700820
+		newUserInfo  = "{'REQ_ID':'"+properties.getProperty(dataObjectCodesStr)+"','account':'040708','password':'szzhzx'}";
+		List<Map<String, String>> list = queryService.pageQuery(dataObjectCodesStr, conditions, returnFields, pageSize,	pageNumber, newUserInfo);
 		
 		//List<Map<String, String>> list = queryService.query(dataObjectCode, conditions, returnFields, queryCounts,	userInfo);
 		
@@ -362,8 +369,10 @@ public class GetPlatformData {
 
 	public String pageQuery(String dataObjectCode, String conditions, String returnFields, int pageSize, int pageNumber,
 			Boolean formatted, String resultStyle) {
-
+		String newUserInfo ="";
 		this.platformDataInit();
+		///增加REQ_ID 王勇 201700820
+		newUserInfo  = "{'REQ_ID':'"+properties.getProperty(dataObjectCode)+"','account':'040708','password':'szzhzx'}";
 		String queryResult = "";
 
 		queryResult = queryService.pageQuery(dataObjectCode, conditions, returnFields, pageSize, pageNumber, formatted,
@@ -479,14 +488,18 @@ public class GetPlatformData {
 		
 		if (dataObjectCodesStr.matches("(.*)DWD_DPTJCJ_JJXX(.*)") ||dataObjectCodesStr.matches("(.*)DWD_DPTJCJ_CJXX(.*)")|| dataObjectCodesStr.matches("(.*)DWD_DPT_AJ_JBXX(.*)")) {
 			listOneDay.clear();
+			String newUserInfo ="";
+			this.platformDataInit();
+			///增加REQ_ID 王勇 201700820
+			newUserInfo  = "{'REQ_ID':'"+properties.getProperty(dataObjectCode)+"','account':'040708','password':'szzhzx'}";
 			if (dataObjectCodesStr.matches("(.*)DWD_DPTJCJ_JJXX(.*)")) {
-				listOneDay = queryService.query("DWD_DPT_JCJ_JJXX_ONEDAY", conditions, returnFields, pageSize,	userInfo);
+				listOneDay = queryService.query("DWD_DPT_JCJ_JJXX_ONEDAY", conditions, returnFields, pageSize,	newUserInfo);
 			}
 			if (dataObjectCodesStr.matches("(.*)DWD_DPTJCJ_CJXX(.*)")) {
-				listOneDay = queryService.query("DWD_DPT_JCJ_CJXX_ONEDAY", conditions, returnFields, pageSize,	userInfo);
+				listOneDay = queryService.query("DWD_DPT_JCJ_CJXX_ONEDAY", conditions, returnFields, pageSize,	newUserInfo);
 			}
 			if (dataObjectCodesStr.matches("(.*)DWD_DPT_AJ_JBXX(.*)")) {
-				listOneDay = queryService.query("DWD_DPT_AJ_JBXX_ONEDAY", conditions, returnFields, pageSize,	userInfo);
+				listOneDay = queryService.query("DWD_DPT_AJ_JBXX_ONEDAY", conditions, returnFields, pageSize,	newUserInfo);
 			}
 		}
 		return listOneDay;
