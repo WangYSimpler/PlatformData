@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import com.google.gson.Gson;
-import com.hy.util.DateUtils;
+import cn.com.hy.util.DateUtils;
 
 import cn.com.dimensoft.esb.query.QueryFwzxService;
 

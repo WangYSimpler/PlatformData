@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.hy.util;
+package cn.com.hy.util;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;
@@ -65,10 +65,6 @@ public class JsonUtil {
 	  
 	    }  
 	  
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 
 	}

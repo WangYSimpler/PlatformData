@@ -1,4 +1,4 @@
-package com.hy.util;
+package cn.com.hy.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

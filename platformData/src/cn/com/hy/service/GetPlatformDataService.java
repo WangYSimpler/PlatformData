@@ -4,7 +4,7 @@
 * @项目名：platformData
 *  高弗特 goFirst
 */
-package com.hy.manager.sys.module;
+package cn.com.hy.service;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,11 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
-import com.hy.util.PropertiesUtils;
+import cn.com.hy.util.PropertiesUtils;
 import cn.com.dimensoft.esb.query.QueryFwzxService;
 
 @Service
-public class GetPlatformData {
+public class GetPlatformDataService {
 
 	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
@@ -367,16 +367,15 @@ public class GetPlatformData {
 		return queryResult;
 	}
 
-	public String pageQuery(String dataObjectCode, String conditions, String returnFields, int pageSize, int pageNumber,
-			Boolean formatted, String resultStyle) {
-		String newUserInfo ="";
+	public String pageQuery(String dataObjectCode, String conditions, String returnFields, int pageSize, int pageNumber,Boolean formatted, String resultStyle) {
+		
 		this.platformDataInit();
 		///增加REQ_ID 王勇 201700820
-		newUserInfo  = "{'REQ_ID':'"+properties.getProperty(dataObjectCode)+"','account':'040708','password':'szzhzx'}";
+		String newUserInfo  = "{'REQ_ID':'"+properties.getProperty(dataObjectCode)+"','account':'040708','password':'szzhzx'}";
 		String queryResult = "";
 
 		queryResult = queryService.pageQuery(dataObjectCode, conditions, returnFields, pageSize, pageNumber, formatted,
-				resultStyle, userInfo);
+				resultStyle, newUserInfo);
 
 		/* //测试使用
 		System.out.println("========开始***===========");
@@ -474,7 +473,6 @@ public class GetPlatformData {
 		try {
 			pWriter = (PrintWriter) response.getWriter();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		pWriter.print(json);

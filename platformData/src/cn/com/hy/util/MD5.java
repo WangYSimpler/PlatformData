@@ -1,4 +1,4 @@
-package com.hy.util;
+package cn.com.hy.util;
 
 public class MD5
 {

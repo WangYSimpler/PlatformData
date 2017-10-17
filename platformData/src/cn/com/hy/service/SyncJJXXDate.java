@@ -1,11 +1,11 @@
-package com.hy.manager.sys.module;
+package cn.com.hy.service;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import com.hy.util.DateUtils;
+import cn.com.hy.util.DateUtils;
 
 public class SyncJJXXDate {
 

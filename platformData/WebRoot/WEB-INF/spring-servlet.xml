@@ -26,7 +26,7 @@
 	</mvc:annotation-driven>
  
     <!-- 扫描注解包 -->
-    <context:component-scan base-package="com.hy.manager"/>
+    <context:component-scan base-package="cn.com.hy"/>
  
     <!-- don't handle the static resource -->
     <mvc:default-servlet-handler />

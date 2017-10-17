@@ -13,8 +13,8 @@ import java.util.Map;
  */
 public interface QueryService {
 	
-	List<Map<String, String>> query(String dataObjectCode,
-			String conditions, String returnFields, int pageSize);
+	List<Map<String, String>> query(String dataObjectCode,String conditions, String returnFields, int pageSize);
+	
 	/**
 	 * 查询
 	 * 
@@ -24,8 +24,7 @@ public interface QueryService {
 	 * @param pageSize
 	 * @return
 	 */
-	String query(String dataObjectCode, String conditions, String returnFields,
-			int pageSize, Boolean formatted, String resultStyle);
+	String query(String dataObjectCode, String conditions, String returnFields,int pageSize, Boolean formatted, String resultStyle);
 
 	/**
 	 * 分页查询
@@ -37,8 +36,7 @@ public interface QueryService {
 	 * @param pageNumber
 	 * @return
 	 */
-	String pageQuery(String dataObjectCode, String conditions,
-			String returnFields, int pageSize, int pageNumber,
+	String pageQuery(String dataObjectCode, String conditions,String returnFields, int pageSize, int pageNumber,
 			Boolean formatted, String resultStyle);
 	
 	/**
@@ -48,8 +46,7 @@ public interface QueryService {
 	 * @param detailFields
 	 * @return
 	 */
-	Map<String, String> detail(String dataObjectCode, String conditions,
-			String detailFields);
+	Map<String, String> detail(String dataObjectCode, String conditions,String detailFields);
 	
 	/**
 	 * 列表的分页展示
@@ -60,8 +57,7 @@ public interface QueryService {
 	 * @param pageNumber
 	 * @return
 	 */
-	List<Map<String, String>> pageQuery(String dataObjectCode,
-			String conditions, String returnFields, int pageSize,int pageNumber);
+	List<Map<String, String>> pageQuery(String dataObjectCode,String conditions, String returnFields, int pageSize,int pageNumber);
 	
 	/**
 	 

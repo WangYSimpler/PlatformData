@@ -3,7 +3,7 @@
  * @author WangY
  * @Date  2017年3月8日
  */
-package com.hy.util;
+package cn.com.hy.util;
 
 import java.io.File;
 import java.io.FileInputStream;
