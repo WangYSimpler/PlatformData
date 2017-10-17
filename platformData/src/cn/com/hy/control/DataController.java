@@ -268,7 +268,7 @@ public class DataController {
 				dataObjectCode = "DWD_DPT_JCJ_JJXX_ONEDAY";
 				
 				/*
-				 * 当前日期使用like进行查询
+				 * 当前日期使用like进行
 				 * String currentDateStart = currentDate + "000000";
 				String currentDateEnd = currentDate + "235959";*/
 				

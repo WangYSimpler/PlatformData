@@ -11,10 +11,12 @@ import cn.com.dimensoft.esb.query.QueryFwzxService;
 
 public class ConsumerTest {
 	
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
 	
 	 private final static String userInfo = "{'account':'040708','password':'szzhzx'}";
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
 
 		//配置文件获取

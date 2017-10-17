@@ -13,6 +13,7 @@ import cn.com.dimensoft.esb.query.QueryFwzxService;
 
 public class ConsumerTest {
 	
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
 	
 	 private final static String userInfo = "{'account':'040708','password':'szzhzx'}";
@@ -50,6 +51,7 @@ public class ConsumerTest {
 		
 		
 		String dataObjectCode = "DWD_DPT_JCJ_JJXX_ONEDAY";
+		@SuppressWarnings("unused")
 		String conditions ="";
 	
 		/*
