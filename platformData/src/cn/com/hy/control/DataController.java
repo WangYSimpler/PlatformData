@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 import cn.com.hy.service.GetPlatformDataService;
 import cn.com.hy.service.SyncJJXXDate;
 import cn.com.hy.util.CommonUtil;
@@ -59,7 +60,7 @@ public class DataController {
 			logger.info("code : -1, message:请求参数中conditions、dataObjectCode 不存在");
 			queryMethodResult = "{code:-1,message:请求参数中conditions、dataObjectCode 不存在}";
 		} else {
-		
+			/************ 常见数据的初始化 *******************/
 			/// 返回结果字段
 			String returnFields = request.getParameter("returnFields");
 			if (conditions == null) {
@@ -90,13 +91,13 @@ public class DataController {
 			// xml或json
 			String resultStyle = request.getParameter("resultStyle");
 			
-			
-			if (methodName.equals("count")) {
+			/****************系统中方法问题**********************/
+			if (methodName.equals("count")) {///调用查询条数方法
 				queryMethodResult = this.getResultByCount(dataObjectCode, conditions);
-			}else if (methodName.equals("query")) {
+			}else if (methodName.equals("query")) {//普通查询方法
 				///query 查询方法
 				queryMethodResult = this.getResultByQuery(dataObjectCode, conditions, returnFields, pageSize, formatted,resultStyle);
-			}else if (methodName.equals("pageQuery")) {
+			}else if (methodName.equals("pageQuery")) {//分页查询方法
 				
 				queryMethodResult = this.getResultByPageQuery(dataObjectCode, conditions, returnFields, pageSize, pageNumber,formatted, resultStyle);
 				
@@ -108,75 +109,25 @@ public class DataController {
 				/// 刑事警情类别
 				String XSJQString = request.getParameter("D2");
 				// 时间的格式化
-				 queryMethodResult = this.getResultByQueryJJXX(dataObjectCode, conditions, returnFields,dateStart,JJBHString,XSJQString);
+				queryMethodResult = this.getResultByQueryJJXX(dataObjectCode, conditions, returnFields,dateStart,JJBHString,XSJQString);
 
 			}///20170420  王勇合肥用于系统同步数据
-			else if (methodName.equals("querySyncJJXX")) {
-				/// 传递时间到后台
+			else if (methodName.equals("querySyncJJXX")) {//合肥微勘后台服务使用查询
+				///传递时间到后台
 				String dateStart = request.getParameter("DStart");
 				///传递结束
 				String dateEnd = request.getParameter("DEnd");
-				///
+				///接警编号
 				String JJBHString = request.getParameter("JJBH");
-				
-				//String oneDayConditions = "";
-				
-				Map<String, String> dataObjectCodeConditionMap = new HashMap<String, String>();
-				
-				// 时间的格式化
-				//SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-				
-				if (!conditions.equals("")) {
-					conditions += "  and ";
-				}
-				if (JJBHString != null && JJBHString != "") {
-					
-					conditions += "JJBH='" + JJBHString + "'";
-				} else {
-					/// 传条件值条件值
-					if (conditions.contains("JJBH")) {
-						conditions += "  and ";
-					}
-					///20170420   王勇
-					///查询接警信息
-					if (dataObjectCode.equals("DWD_DPTJCJ_JJXX") || dataObjectCode.equals("DWD_DPT_AJ_JBXX") || dataObjectCode.equals("DWD_DPTJCJ_CJXX")) {
-						dataObjectCodeConditionMap.clear();
-						dataObjectCodeConditionMap.putAll(new SyncJJXXDate().getDataObjectCodeConditioMap(dataObjectCode,dateStart, dateEnd));
-					}
-					
-				}
-				
-				String conditionTempStr = conditions;
-				//保存两个结果
-				List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
-				listMap.clear();
-				
-				///获取objectCode
-				for (Map.Entry<String, String> entry : dataObjectCodeConditionMap.entrySet()) {
-
-					dataObjectCode = entry.getKey();
-					conditions = conditionTempStr + entry.getValue();
-					List<Map<String, String>> listMapTemp = new ArrayList<Map<String, String>>();
-				
-					int queryCounts = Integer.parseInt(gpd.count(dataObjectCode, conditions));
-					logger.info("test条数：" +  queryCounts);
-					String queryResult = gpd.query(dataObjectCode, conditions, returnFields, queryCounts);
-					listMapTemp = JsonUtil.parseMap2JavaBean(queryResult, new TypeToken<List<Map<String, String>>>() {}.getType());
-					if (listMapTemp.size() > 0) {
-						listMap.addAll(listMapTemp);
-					}
-					
-				}
-				queryMethodResult = new Gson().toJson(listMap);
-
+				///调用
+				queryMethodResult = this.getResultByQuerySyncJJXX(dataObjectCode, conditions, returnFields, dateStart, dateEnd, JJBHString);
 			}else {
-				queryMethodResult = "-1";
+				logger.info("code:-2, message: 传递methodName不存在，请检查");
+				queryMethodResult = "{code:-2, message: 传递methodName 存在问题请检查}";
 			}
 		}
 
-		// queryMethodResult = gpd.getData(dataObjectCode,conditions);
-		// System.out.print();
-
+		//回调方法
 		String callback = request.getParameter("callback");
 		if (StringUtils.isEmpty(callback)){
 			return queryMethodResult;
@@ -188,6 +139,7 @@ public class DataController {
 	
 	/**
 	 *  查询数据条数
+	 *  methodName=count
 	 * @param dataObjectCode
 	 * @param conditions
 	 * @return
@@ -198,6 +150,7 @@ public class DataController {
 	
 	/**
 	 * query 方法调取数据
+	 * methodName= query
 	 * @param dataObjectCode
 	 * @param conditions
 	 * @param returnFields
@@ -220,6 +173,18 @@ public class DataController {
 		return gpd.query(dataObjectCode, conditions, returnFields, pageSize, formatted,resultStyle);
 	}
 	
+	/**
+	 * 分页查询 WangY 20171018 
+	 * methodName=pageQuery
+	 * @param dataObjectCode
+	 * @param conditions
+	 * @param returnFields
+	 * @param pageSize
+	 * @param pageNumber
+	 * @param formatted
+	 * @param resultStyle
+	 * @return
+	 */
 	private String getResultByPageQuery(String dataObjectCode, String conditions,String returnFields,int pageSize, int pageNumber
 										,boolean formatted, String resultStyle){
 		if (resultStyle == null) {
@@ -233,7 +198,17 @@ public class DataController {
 		
 	}
 	
-	// 查询警情警情方法
+	/**
+	 * 查询警情警情方法
+	 * method=queryJJXX
+	 * @param dataObjectCode
+	 * @param conditions
+	 * @param returnFields
+	 * @param dateStart
+	 * @param JJBHString
+	 * @param XSJQString
+	 * @return
+	 */
 	private String  getResultByQueryJJXX(String dataObjectCode, String conditions
 			,String returnFields,String dateStart,String JJBHString,String XSJQString){
 		
@@ -300,8 +275,73 @@ public class DataController {
 		
 	}
 	
-	
-	
-	
+	/**
+	 * WangY 20171018 ,合肥使用
+	 * methodName = querySyncJJXX
+	 * @param dataObjectCode
+	 * @param conditions
+	 * @param returnFields
+	 * @param dateStart
+	 * @param dateEnd
+	 * @param JJBHString
+	 * @return
+	 */
+	private String getResultByQuerySyncJJXX(String dataObjectCode, String conditions
+			,String returnFields,String dateStart ,String dateEnd,String JJBHString){
+		
+		Map<String, String> dataObjectCodeConditionMap = new HashMap<String, String>();
+		
+		// 时间的格式化
+		//SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+		
+		if (!conditions.equals("")) {
+			conditions += "  and ";
+		}
+		if (JJBHString != null && JJBHString != "") {
+			
+			conditions += "JJBH='" + JJBHString + "'";
+		} else {
+			/// 传条件值条件值
+			if (conditions.contains("JJBH")) {
+				conditions += "  and ";
+			}
+			///20170420   王勇
+			///查询接警信息
+			if (dataObjectCode.equals("DWD_DPTJCJ_JJXX") || dataObjectCode.equals("DWD_DPT_AJ_JBXX") || dataObjectCode.equals("DWD_DPTJCJ_CJXX")) {
+				dataObjectCodeConditionMap.clear();
+				dataObjectCodeConditionMap.putAll(new SyncJJXXDate().getDataObjectCodeConditioMap(dataObjectCode,dateStart, dateEnd));
+			}
+			
+		}
+		
+		String conditionTempStr = conditions;
+		//保存两个结果
+		List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
+		listMap.clear();
+		
+		///获取objectCode
+		for (Map.Entry<String, String> entry : dataObjectCodeConditionMap.entrySet()) {
 
+			dataObjectCode = entry.getKey();
+			conditions = conditionTempStr + entry.getValue();
+			List<Map<String, String>> listMapTemp = new ArrayList<Map<String, String>>();
+			
+			//查询总共有多少条
+			int queryCounts = 0;
+			String queryCountStr = this.getResultByCount(dataObjectCode, conditions);
+			if (!CommonUtil.isNullOrBlank(queryCountStr)) {
+				logger.info("test条数：" +  queryCounts);
+				queryCounts = Integer.parseInt(queryCountStr);
+			}
+			
+			String queryResult = this.getResultByQuery(dataObjectCode, conditions, returnFields, queryCounts,false,null);
+			listMapTemp = JsonUtil.parseMap2JavaBean(queryResult, new TypeToken<List<Map<String, String>>>() {}.getType());
+			if (listMapTemp.size() > 0) {
+				listMap.addAll(listMapTemp);
+			}
+			
+		}
+		return  new Gson().toJson(listMap);
+	}
+	
 }

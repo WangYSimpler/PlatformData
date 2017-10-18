@@ -32,11 +32,7 @@ public class CommonUtil {
 	 * @return true：为空
 	 */
 	public static boolean isNullOrBlank(String str) {
-		if (null == str || "".equals(str)) {
-			return true;
-		} else {
-			return false;
-		}
+		 return str == null || str.length() == 0;
 	}
 	
 	/**
